@@ -6,7 +6,7 @@ st.title("💬 Chatbot")
 st.write("Welcome to Arathi chat")
 
 # Load OpenAI API key securely
-openai.api_key = st.secrets["OPENAI_API_KEY"]
+client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 # Default model
 if "openai_model" not in st.session_state:
@@ -34,17 +34,20 @@ if prompt:
         message_placeholder = st.empty()
         full_response = ""
 
-        # Stream response from OpenAI
-        for response in openai.ChatCompletion.create(
+        # Stream response using the updated API
+        stream = client.chat.completions.create(
             model=st.session_state["openai_model"],
             messages=[
                 {"role": m["role"], "content": m["content"]}
                 for m in st.session_state.messages
             ],
             stream=True,
-        ):
-            full_response += response.choices[0].delta.get("content", "")
+        )
+
+        for chunk in stream:
+            content = chunk.choices[0].delta.content or ""
+            full_response += content
             message_placeholder.markdown(full_response + "▌")
 
-        # Display final message
         message_placeholder.markdown(full_response)
+        st.session_state.messages.append({"role": "assistant", "content": full_response})

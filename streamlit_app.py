@@ -23,7 +23,7 @@ for message in st.session_state.messages:
 
     # Create a chat input field to allow the user to enter a message. This will display
     # automatically at the bottom of the page.
-prompt = st.chat_input("What is up?"):
+prompt = st.chat_input("What is up?")
 if prompt:
     with st.chat_message("user"):
         st.markdown(prompt)

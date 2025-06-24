@@ -34,18 +34,13 @@ if prompt:
     with st.chat_message("assistant"):
         message_placeholder=st.empty()
         full_response=""
-        for response in openai.chatcompletion.create(model=st.session_state["openai_model"],messages=[{"role":m["role"],"content":m["content"]}for m in st.session_state.messages],stream=True,
-        st.markdown(response)
-    st.session_state.messages.append({"role":"assistant","content":response})
-        # Generate a response using the OpenAI API.
-        stream = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": m["role"], "content": m["content"]}
-                for m in st.session_state.messages
+        for response in openai.chatcompletion.create(model=st.session_state["openai_model"],
+            messages=[{"role":m["role"],"content":m["content"]}
+            for m in st.session_state.messages
             ],
             stream=True,
         ):
+        
             full_response+=response.choices[0].delta.get("content","")
             message_placeholder.markdown(full_response+ "|")
         message_placeholder.markdown(full_response)
